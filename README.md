@@ -5,6 +5,13 @@ Cross Platform Swiss Army Knife for DevOps
 The release version will be available in version 1.0.0 Beta, and this software will be replace [Operation X](https://github.com/supanadit/operation-deploy-center-engine) and Operation X still available for Commercial use
 
 ### Changelog
+#### Version 0.0.1 Alpha
+- Basic Command `devops-factory`
+- Support Argument `-h` for Help
+- Experimental Argument with `-n` for New Project
+- Default and Basic Configuration Support
+- TOML Support for any Configuration
+- Auto Create Folder `DevOpsFactory` in Home Folder
 
 ### Todo
 - Git Clone Repository
