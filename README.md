@@ -2,7 +2,7 @@
 Cross Platform Swiss Army Knife for DevOps
 
 ### Description
-The release version will be available in version 1.0.0 Beta, and this software will be replace [Operation X](https://github.com/supanadit/operation-deploy-center-engine) and Operation X still available for Commercial use
+The release version will be available in version 1.0.0 Beta, and this software will be replace [Operation X](https://github.com/supanadit/operation-deploy-center-engine)
 
 ### Changelog
 #### Version 0.0.1 Alpha
@@ -38,3 +38,6 @@ The release version will be available in version 1.0.0 Beta, and this software w
 - Check version of each package
 - Support Deploy by running `devops-factory -p test-project -t 123.123.123.123 -d "/var/www/test"`
 - Support Instant Deploy by running `devops-factory -i github-project`
+
+### Support Me
+![https://patreon.com/supanadit](https://c5.patreon.com/external/logo/become_a_patron_button@2x.png)
