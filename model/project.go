@@ -6,7 +6,3 @@ type Project struct {
 	Git         Git
 	Path        string
 }
-
-func GetAllProject() {
-
-}

@@ -6,6 +6,10 @@ Cross Platform Swiss Army Knife for DevOps
 The release version will be available in version 1.0.0 Beta, and this software will be replace [Operation X](https://github.com/supanadit/operation-deploy-center-engine)
 
 ### Changelog
+#### Version 0.0.3 Alpha
+- Support Save SSH with Port `devops-factory -kn root@123.123.123.123:22` or it will asking the port if not include when insert host
+- Instant SSH Authentication by `devops-factory -kc root@123.123.123.123`
+
 #### Version 0.0.2 Alpha
 - Support Save SSH with Keyring by `devops-factory --kn 123.123.123.123` or `devops-factory -kn root@123.123.123.123`
 - Support Delete SSH with Keyring by `devops-factory --kr root@123.123.123.123`
@@ -27,7 +31,6 @@ The release version will be available in version 1.0.0 Beta, and this software w
 - Support Continues Integration
 - FTP and SFTP Integration
 - Custom Script Support
-- Instant SSH Authentication
 - Run Script Only on Remote Server
 - Deploy Repository and Run Script
 - Deploy Repository using Standard Method (PHP, Python, Static HTML, etc)
@@ -44,7 +47,7 @@ The release version will be available in version 1.0.0 Beta, and this software w
 - Check version of each package
 - Support Deploy by running `devops-factory -p test-project -t 123.123.123.123 -d "/var/www/test"`
 - Support Instant Deploy by running `devops-factory -i github-project`
-- Support Add new Project from Existing repository
+- Support Add new Project from Existing repository in any location
 
 ### Support Me
 ![https://patreon.com/supanadit](https://c5.patreon.com/external/logo/become_a_patron_button@2x.png)

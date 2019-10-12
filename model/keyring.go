@@ -6,11 +6,13 @@ import (
 	"github.com/naoina/toml"
 	"io/ioutil"
 	"log"
+	"strings"
 )
 
 type Keyring struct {
 	Username string
 	Host     string
+	Port     string
 	Password string `toml:"-"`
 }
 
@@ -100,4 +102,31 @@ func (keyringModel Keyring) Exist(configuration Configuration) bool {
 		}
 	}
 	return found
+}
+
+func (keyringModel Keyring) GetHostPort() string {
+	var port string
+	if keyringModel.Port == "" {
+		port = "22"
+	} else {
+		port = keyringModel.Port
+	}
+	return keyringModel.Host + ":" + port
+}
+
+func GetKeyringFromString(data string) Keyring {
+	var keyringData Keyring
+	hostPort := strings.Split(data, ":")
+	if len(hostPort) > 1 {
+		keyringData.Port = hostPort[1]
+	}
+
+	userHost := strings.Split(hostPort[0], "@")
+	if len(userHost) > 1 {
+		keyringData.Username = userHost[0]
+		keyringData.Host = userHost[1]
+	} else {
+		keyringData.Host = data
+	}
+	return keyringData
 }

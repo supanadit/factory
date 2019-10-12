@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/supanadit/devops-factory/system"
 	"golang.org/x/crypto/ssh/terminal"
 	"gopkg.in/src-d/go-git.v4"
 	"io/ioutil"
@@ -21,10 +22,11 @@ type args struct {
 	Pn string `arg:"separate" help:"New Project"`
 	Kn string `arg:"separate" help:"New SSH Keyring"`
 	Kr string `arg:"separate" help:"Remove SSH Keyring"`
+	Kc string `arg:"separate" help:"Connect to SSH"`
 }
 
 func (args) Version() string {
-	return "DevOps Factory 0.0.1 Beta"
+	return "DevOps Factory 0.0.3 Beta"
 }
 
 func main() {
@@ -89,14 +91,26 @@ func main() {
 	}
 
 	if args.Kn != "" {
-		userHost := strings.Split(args.Kn, "@")
 		continueProcess := true
-		var keyringModel model.Keyring
-		reader := bufio.NewReader(os.Stdin)
-		if len(userHost) > 1 {
-			keyringModel.Username = userHost[0]
-			keyringModel.Host = userHost[1]
-		} else {
+		var keyringModel = model.GetKeyringFromString(args.Kn)
+		if keyringModel.Port == "" {
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("Port ( Left blank for default 22 ) : ")
+			port, err := reader.ReadString('\n')
+			if err != nil {
+				if model.DEBUG {
+					fmt.Print(err)
+				} else {
+					fmt.Print("Error while setup port")
+				}
+				continueProcess = false
+			} else {
+				keyringModel.Port = strings.TrimSuffix(port, "\n")
+			}
+		}
+
+		if keyringModel.Username == "" {
+			reader := bufio.NewReader(os.Stdin)
 			fmt.Print("Username : ")
 			name, err := reader.ReadString('\n')
 			if err != nil {
@@ -108,7 +122,6 @@ func main() {
 				continueProcess = false
 			} else {
 				keyringModel.Username = strings.TrimSuffix(name, "\n")
-				keyringModel.Host = args.Kn
 			}
 		}
 
@@ -137,16 +150,41 @@ func main() {
 	}
 
 	if args.Kr != "" {
-		userHost := strings.Split(args.Kr, "@")
-		if len(userHost) > 1 {
-			var keyring model.Keyring = model.Keyring{
-				Host:     userHost[1],
-				Username: userHost[0],
-			}
+		var keyring = model.GetKeyringFromString(args.Kr)
+		if keyring.Username != "" && keyring.Host != "" {
 			keyring.RemoveFromAll(cfg)
 			fmt.Printf("Success Delete %s with username %s", keyring.Host, keyring.Username)
 		} else {
 			fmt.Print("Please specified keyring to delete eg. root@123.123.132.123")
+		}
+	}
+
+	if args.Kc != "" {
+		continueProcess := true
+		var keyring = model.GetKeyringFromString(args.Kc)
+		if keyring.Username != "" && keyring.Host != "" {
+			keyring.Password = keyring.GetPasswordFromSystem()
+			client, err := system.DialWithPasswd(keyring.GetHostPort(), keyring.Username, keyring.Password)
+			if err != nil {
+				if model.DEBUG {
+					fmt.Print(err)
+				} else {
+					fmt.Print("Make sure username, password and port is correct")
+				}
+				continueProcess = false
+			}
+			if continueProcess {
+				defer client.Close()
+				if err := client.Terminal(nil).Start(); err != nil {
+					if model.DEBUG {
+						fmt.Print(err)
+					} else {
+						fmt.Print("Cannot open interactive shell")
+					}
+				}
+			}
+		} else {
+			fmt.Print("Please specified keyring eg. root@123.123.132.123")
 		}
 	}
 }
