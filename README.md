@@ -11,7 +11,6 @@ The release version will be available in version 1.0.0 Beta, and this software w
 - Support Delete SSH with Keyring by `devops-factory --kr root@123.123.123.123`
 - New Project Command change to `devops-factory --pn "Your Project Name"`
 
-### Changelog
 #### Version 0.0.1 Alpha
 - Basic Command `devops-factory`
 - Support Argument `-h` for Help
