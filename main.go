@@ -34,7 +34,7 @@ func main() {
 	arg.MustParse(&args)
 	cfg := model.LoadDefaultConfiguration()
 
-	if args.Pn == "" && args.Kn == "" && args.Kr == "" {
+	if args.Pn == "" && args.Kn == "" && args.Kr == "" && args.Kc == "" {
 		fmt.Println("Cross Platform Swiss Army Knife for DevOps")
 	}
 
