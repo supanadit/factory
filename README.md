@@ -50,4 +50,4 @@ The release version will be available in version 1.0.0 Beta, and this software w
 - Support Add new Project from Existing repository in any location
 
 ### Support Me
-![https://patreon.com/supanadit](https://c5.patreon.com/external/logo/become_a_patron_button@2x.png)
+[![https://patreon.com/supanadit](https://c5.patreon.com/external/logo/become_a_patron_button@2x.png)](http://patreon.com/supanadit)
