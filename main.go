@@ -3,30 +3,35 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/olekukonko/tablewriter"
 	"github.com/supanadit/devops-factory/system"
 	"golang.org/x/crypto/ssh/terminal"
 	"gopkg.in/src-d/go-git.v4"
-	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 
 	"github.com/alexflint/go-arg"
-	"github.com/naoina/toml"
 	"github.com/ozgio/strutil"
 	"github.com/supanadit/devops-factory/model"
 )
 
 type args struct {
 	Pn string `arg:"separate" help:"New Project"`
+	Pe string `arg:"separate" help:"New Project From Existing Repository"`
+	Pr string `arg:"separate" help:"Remove Project"`
+	Pl bool   `arg:"separate" help:"Project List"`
 	Kn string `arg:"separate" help:"New SSH Keyring"`
 	Kr string `arg:"separate" help:"Remove SSH Keyring"`
 	Kc string `arg:"separate" help:"Connect to SSH"`
+	Kl bool   `arg:"separate" help:"List SSH Keyring"`
 }
 
 func (args) Version() string {
-	return "DevOps Factory 0.0.3 Beta"
+	return "DevOps Factory 0.0.4 Alpha"
 }
 
 func main() {
@@ -34,7 +39,7 @@ func main() {
 	arg.MustParse(&args)
 	cfg := model.LoadDefaultConfiguration()
 
-	if args.Pn == "" && args.Kn == "" && args.Kr == "" && args.Kc == "" {
+	if args.Pn == "" && args.Pe == "" && args.Pr == "" && !args.Pl && args.Kn == "" && args.Kr == "" && args.Kc == "" && !args.Kl {
 		fmt.Println("Cross Platform Swiss Army Knife for DevOps")
 	}
 
@@ -60,10 +65,6 @@ func main() {
 		gitModel.Path = project.Path
 		project.Git = gitModel
 
-		var allProject = model.GetAllProjectConfiguration(cfg)
-		allProject.Project = append(allProject.Project, project)
-
-		dataToml, _ := toml.Marshal(&allProject)
 		_, err := git.PlainClone(gitModel.Path, false, &git.CloneOptions{
 			URL:      gitModel.Url,
 			Progress: os.Stdout,
@@ -78,16 +79,96 @@ func main() {
 			continueProcess = false
 		}
 		if continueProcess {
-			err = ioutil.WriteFile(cfg.GetProjectConfigFilePath(), dataToml, 0644)
+			continueProcess = project.Save(cfg)
+		}
+	}
+
+	if args.Pe != "" {
+		existingProject, _ := filepath.Abs(args.Pe)
+		isExist := true
+		if _, err := os.Stat(existingProject); os.IsNotExist(err) {
+			isExist = false
+		}
+		if isExist {
+			var project model.Project
+			alias := strutil.Slugify(filepath.Base(existingProject))
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("Project Name : ")
+			projectName, _ := reader.ReadString('\n')
+			project.ProjectName = strings.TrimSuffix(projectName, "\n")
+			project.Alias = alias
+			project.Path = existingProject
+			r, err := git.PlainOpen(project.Path)
 			if err != nil {
 				if model.DEBUG {
 					log.Print(err)
 				} else {
-					fmt.Printf("Cannot create configuration file for project")
+					fmt.Printf("Cannot check git repository \n")
 				}
-				continueProcess = false
 			}
+			if r != nil {
+				err = r.Storer.PackRefs()
+				if err != nil {
+					if model.DEBUG {
+						log.Print(err)
+					} else {
+						fmt.Printf("Git Repository doesn't exist \n")
+					}
+				} else {
+					var remotes []*git.Remote
+					remotes, err = r.Remotes()
+					if err != nil {
+						if model.DEBUG {
+							log.Print(err)
+						} else {
+							fmt.Printf("Cannot check remote repository \n")
+						}
+					} else {
+						if len(remotes) == 0 {
+							fmt.Print("No Remote Repository exist")
+						} else {
+							var gitProject model.Git
+							gitProject.Path = project.Path
+							gitProject.Url = remotes[0].Config().URLs[0]
+							project.Git = gitProject
+							project.Save(cfg)
+						}
+					}
+				}
+			}
+		} else {
+			fmt.Printf("Path for %s is not exist \n", existingProject)
 		}
+	}
+
+	if args.Pr != "" {
+		var project model.Project
+		exist := false
+		project.Alias = args.Pr
+		exist, project = project.ExistByAlias(cfg)
+		if exist {
+			project.Remove(cfg)
+		} else {
+			fmt.Printf("Project with alias %s is not exist \n", args.Pr)
+		}
+	}
+
+	if args.Pl {
+		projectConfiguration := model.GetAllProjectConfiguration(cfg)
+		var data [][]string
+		for i, element := range projectConfiguration.Project {
+			newData := []string{
+				strconv.Itoa(i + 1),
+				element.ProjectName,
+				element.Alias,
+				element.Git.Url,
+			}
+			data = append(data, newData)
+		}
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"No", "Project Name", "Alias", "Repository URL"})
+		table.AppendBulk(data)
+		table.Render()
 	}
 
 	if args.Kn != "" {
@@ -186,5 +267,23 @@ func main() {
 		} else {
 			fmt.Print("Please specified keyring eg. root@123.123.132.123")
 		}
+	}
+
+	if args.Kl {
+		keyringList := model.GetAllKeyringConfiguration(cfg)
+		var data [][]string
+		for i, element := range keyringList.Keyring {
+			newData := []string{
+				strconv.Itoa(i + 1),
+				element.Username,
+				element.Host,
+				element.Port,
+			}
+			data = append(data, newData)
+		}
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"No", "Username", "Host", "Port"})
+		table.AppendBulk(data)
+		table.Render()
 	}
 }
