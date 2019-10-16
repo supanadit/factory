@@ -6,12 +6,19 @@ Cross Platform Swiss Army Knife for DevOps
 The release version will be available in version 1.0.0 Beta, and this software is the alternative of [Operation X](https://github.com/supanadit/operation-deploy-center-engine)
 
 ### Changelog
+#### Version 0.0.4 Alpha
+- Support Remove Project `devops-factory --pr <project_alias>`
+- Support Get List Project `devops-factory --pl`
+- Support Get List SSH Project `devops-factory --kl`
+- Fix Bug when Remove Keyring SSH `devops-factory --kr root@123.123.123.123`
+- Support Create new Project from existing repository `devops-factory --pe /<your_project_directory>`
+
 #### Version 0.0.3 Alpha
-- Support Save SSH with Port `devops-factory -kn root@123.123.123.123:22` or it will asking the port if not include when insert host
-- Instant SSH Authentication by `devops-factory -kc root@123.123.123.123`
+- Support Save SSH with Port `devops-factory --kn root@123.123.123.123:22` or it will asking the port if not include when insert host
+- Instant SSH Authentication by `devops-factory --kc root@123.123.123.123`
 
 #### Version 0.0.2 Alpha
-- Support Save SSH with Keyring by `devops-factory --kn 123.123.123.123` or `devops-factory -kn root@123.123.123.123`
+- Support Save SSH with Keyring by `devops-factory --kn 123.123.123.123` or `devops-factory --kn root@123.123.123.123`
 - Support Delete SSH with Keyring by `devops-factory --kr root@123.123.123.123`
 - New Project Command change to `devops-factory --pn "Your Project Name"`
 
