@@ -31,9 +31,7 @@ The release version will be available in version 1.0.0 Beta, and this software i
 - Auto Create Folder `DevOpsFactory` in Home Folder
 
 ### Todo
-- Git Clone Repository
 - Update Repository
-- SSH Integration
 - Kubernetes Integration
 - Support Continues Integration
 - FTP and SFTP Integration
@@ -48,13 +46,11 @@ The release version will be available in version 1.0.0 Beta, and this software i
 - Versioning Repository
 - Backup All Repository
 - Environment Support
-- Terminal Support for command `devops-factory`
 - Web GUI for `devops-factory --serve`
 - Manage package for NodeJS, PHP, Flutter, Python, etc.
 - Check version of each package
 - Support Deploy by running `devops-factory -p test-project -t 123.123.123.123 -d "/var/www/test"`
 - Support Instant Deploy by running `devops-factory -i github-project`
-- Support Add new Project from Existing repository in any location
 
 ### Support Me
 [![https://patreon.com/supanadit](https://c5.patreon.com/external/logo/become_a_patron_button@2x.png)](http://patreon.com/supanadit)
