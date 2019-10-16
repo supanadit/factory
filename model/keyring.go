@@ -72,7 +72,11 @@ func (keyringModel Keyring) RemoveFromConfiguration(configuration Configuration)
 	allKeyring := GetAllKeyringConfiguration(configuration)
 	var changedKeyRing KeyringConfiguration
 	for _, element := range allKeyring.Keyring {
-		if element.Host != keyringModel.Host && element.Username != keyringModel.Username {
+		if element.Host == keyringModel.Host {
+			if element.Username != keyringModel.Username {
+				changedKeyRing.Keyring = append(changedKeyRing.Keyring, element)
+			}
+		} else {
 			changedKeyRing.Keyring = append(changedKeyRing.Keyring, element)
 		}
 	}
