@@ -3,7 +3,7 @@
 Cross Platform Swiss Army Knife for DevOps
 
 ### Description
-The release version will be available in version 1.0.0 Beta, and this software will be replace [Operation X](https://github.com/supanadit/operation-deploy-center-engine)
+The release version will be available in version 1.0.0 Beta, and this software is the alternative of [Operation X](https://github.com/supanadit/operation-deploy-center-engine)
 
 ### Changelog
 #### Version 0.0.3 Alpha
