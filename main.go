@@ -21,15 +21,16 @@ import (
 )
 
 type args struct {
-	Pn string `arg:"separate" help:"New Project"`
-	Pe string `arg:"separate" help:"New Project From Existing Repository"`
-	Pr string `arg:"separate" help:"Remove Project"`
-	Pl bool   `arg:"separate" help:"Project List"`
-	Pu string `arg:"separate" help:"Project Git Update"`
-	Kn string `arg:"separate" help:"New SSH Keyring"`
-	Kr string `arg:"separate" help:"Remove SSH Keyring"`
-	Kc string `arg:"separate" help:"Connect to SSH"`
-	Kl bool   `arg:"separate" help:"List SSH Keyring"`
+	Pn  string `arg:"separate" help:"New Project"`
+	Pe  string `arg:"separate" help:"New Project From Existing Repository"`
+	Pr  string `arg:"separate" help:"Remove Project"`
+	Pl  bool   `arg:"separate" help:"Project List"`
+	Pu  string `arg:"separate" help:"Project Git Update"`
+	Pwd string `arg:"separate" help:"Get Full Path of Project Directory"`
+	Kn  string `arg:"separate" help:"New SSH Keyring"`
+	Kr  string `arg:"separate" help:"Remove SSH Keyring"`
+	Kc  string `arg:"separate" help:"Connect to SSH"`
+	Kl  bool   `arg:"separate" help:"List SSH Keyring"`
 }
 
 func (args) Version() string {
@@ -41,7 +42,7 @@ func main() {
 	arg.MustParse(&args)
 	cfg := model.LoadDefaultConfiguration()
 
-	if args.Pn == "" && args.Pe == "" && args.Pr == "" && !args.Pl && args.Pu == "" && args.Kn == "" && args.Kr == "" && args.Kc == "" && !args.Kl {
+	if args.Pn == "" && args.Pe == "" && args.Pr == "" && !args.Pl && args.Pu == "" && args.Pwd == "" && args.Kn == "" && args.Kr == "" && args.Kc == "" && !args.Kl {
 		fmt.Println("Cross Platform Swiss Army Knife for DevOps")
 	}
 
@@ -231,6 +232,18 @@ func main() {
 			} else {
 				fmt.Println("Make sure repository exist")
 			}
+		} else {
+			fmt.Printf("Project with alias %s is not exist \n", args.Pr)
+		}
+	}
+
+	if args.Pwd != "" {
+		var project model.Project
+		exist := false
+		project.Alias = args.Pwd
+		exist, project = project.ExistByAlias(cfg)
+		if exist {
+			fmt.Println(project.Path)
 		} else {
 			fmt.Printf("Project with alias %s is not exist \n", args.Pr)
 		}
