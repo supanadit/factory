@@ -1,7 +1,10 @@
 package model
 
 import (
+	"fmt"
 	"github.com/naoina/toml"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/ssh"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
@@ -97,4 +100,15 @@ func GetAllKeyringConfiguration(configuration Configuration) KeyringConfiguratio
 		}
 	}
 	return keyringConfiguration
+}
+
+func GetPublicKey() *ssh.PublicKeys {
+	var publicKey *ssh.PublicKeys
+	sshPath := os.Getenv("HOME") + "/.ssh/id_rsa"
+	sshKey, _ := ioutil.ReadFile(sshPath)
+	publicKey, keyError := ssh.NewPublicKeys("git", []byte(sshKey), "")
+	if keyError != nil {
+		fmt.Println("Invalid SSH Key")
+	}
+	return publicKey
 }

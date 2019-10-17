@@ -62,7 +62,6 @@ func main() {
 		urlGit, _ := reader.ReadString('\n')
 
 		urlGitConversion := strings.TrimSuffix(urlGit, "\n")
-		fmt.Printf("Cloning %s \n", urlGitConversion)
 		_, err := git.PlainClone(project.Path, false, &git.CloneOptions{
 			URL:      urlGitConversion,
 			Progress: os.Stdout,
@@ -181,8 +180,7 @@ func main() {
 				workTree, err = repository.Worktree()
 				if err == nil {
 					err = workTree.Pull(&git.PullOptions{
-						RemoteName: "origin",
-						Progress:   os.Stdout,
+						Progress: os.Stdout,
 					})
 					if err != nil {
 						if model.DEBUG {
