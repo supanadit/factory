@@ -6,6 +6,12 @@ Cross Platform Swiss Army Knife for DevOps
 The release version will be available in version 1.0.0 Beta, and this software is the alternative of [Operation X](https://github.com/supanadit/operation-deploy-center-engine)
 
 ### Changelog
+#### Version 0.0.5 Alpha
+- Support SSH Authentication for Git Repository
+- Support Update Repository
+- Remove Git Model
+- Fix output without line break problem
+
 #### Version 0.0.4 Alpha
 - Support Remove Project `devops-factory --pr <project_alias>`
 - Support Get List Project `devops-factory --pl`
