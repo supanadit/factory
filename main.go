@@ -40,7 +40,7 @@ func main() {
 	arg.MustParse(&args)
 	cfg := model.LoadDefaultConfiguration()
 
-	if args.Pn == "" && args.Pe == "" && args.Pr == "" && !args.Pl && args.Pu != "" && args.Kn == "" && args.Kr == "" && args.Kc == "" && !args.Kl {
+	if args.Pn == "" && args.Pe == "" && args.Pr == "" && !args.Pl && args.Pu == "" && args.Kn == "" && args.Kr == "" && args.Kc == "" && !args.Kl {
 		fmt.Println("Cross Platform Swiss Army Knife for DevOps")
 	}
 
@@ -62,8 +62,8 @@ func main() {
 		urlGit, _ := reader.ReadString('\n')
 
 		urlGitConversion := strings.TrimSuffix(urlGit, "\n")
-
-		_, err := git.PlainClone(urlGitConversion, false, &git.CloneOptions{
+		fmt.Printf("Cloning %s \n", urlGitConversion)
+		_, err := git.PlainClone(project.Path, false, &git.CloneOptions{
 			URL:      urlGitConversion,
 			Progress: os.Stdout,
 		})
@@ -169,10 +169,34 @@ func main() {
 	if args.Pu != "" {
 		var project model.Project
 		exist := false
-		project.Alias = args.Pr
+		project.Alias = args.Pu
 		exist, project = project.ExistByAlias(cfg)
 		if exist {
-
+			var repository *git.Repository
+			var exist bool
+			repository, exist = project.GitRepository(cfg)
+			if exist {
+				var workTree *git.Worktree
+				var err error
+				workTree, err = repository.Worktree()
+				if err == nil {
+					err = workTree.Pull(&git.PullOptions{
+						RemoteName: "origin",
+						Progress:   os.Stdout,
+					})
+					if err != nil {
+						if model.DEBUG {
+							fmt.Println(err)
+						} else {
+							fmt.Println("Cannot Update Repository")
+						}
+					}
+				} else {
+					fmt.Println("Cannot getting Work Tree from the Repository")
+				}
+			} else {
+				fmt.Println("Make sure repository exist")
+			}
 		} else {
 			fmt.Printf("Project with alias %s is not exist \n", args.Pr)
 		}

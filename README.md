@@ -31,7 +31,7 @@ The release version will be available in version 1.0.0 Beta, and this software i
 - Auto Create Folder `DevOpsFactory` in Home Folder
 
 ### Todo
-- Update Repository
+- Update Repository by SSH Auth
 - Kubernetes Integration
 - Support Continues Integration
 - FTP and SFTP Integration
