@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/olekukonko/tablewriter"
 	"github.com/supanadit/devops-factory/system"
-	gittype "github.com/supanadit/git-type"
+	"github.com/supanadit/git-type"
 	"golang.org/x/crypto/ssh/terminal"
 	"gopkg.in/src-d/go-git.v4"
 	"log"
