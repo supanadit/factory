@@ -24,14 +24,14 @@ func (project Project) Save(configuration Configuration) bool {
 		err := ioutil.WriteFile(configuration.GetProjectConfigFilePath(), dataToml, 0644)
 		if err != nil {
 			if DEBUG {
-				log.Print(err)
+				log.Println(err)
 			} else {
-				fmt.Printf("Cannot create configuration file for project \n")
+				fmt.Println("Cannot create configuration file for project")
 			}
 			success = false
 		}
 	} else {
-		fmt.Printf("This Project is Exist \n")
+		fmt.Println("This Project is Exist")
 	}
 	return success
 }
@@ -75,11 +75,11 @@ func (project Project) Remove(configuration Configuration) {
 	err := ioutil.WriteFile(configuration.GetProjectConfigFilePath(), dataToml, 0644)
 	if err != nil {
 		if DEBUG {
-			log.Print(err)
+			log.Println(err)
 		} else {
-			fmt.Printf("Failed to remove Project \n")
+			fmt.Println("Failed to remove Project")
 		}
 	} else {
-		fmt.Print("Project Removed \n")
+		fmt.Println("Project Removed")
 	}
 }

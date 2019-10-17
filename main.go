@@ -73,7 +73,7 @@ func main() {
 			if model.DEBUG {
 				log.Print(err)
 			} else {
-				fmt.Printf("Make sure URL Repository is correct")
+				fmt.Printf("Make sure URL Repository is correct \n")
 			}
 			_ = os.RemoveAll(gitModel.Path)
 			continueProcess = false
@@ -125,7 +125,7 @@ func main() {
 						}
 					} else {
 						if len(remotes) == 0 {
-							fmt.Print("No Remote Repository exist")
+							fmt.Println("No Remote Repository exist")
 						} else {
 							var gitProject model.Git
 							gitProject.Path = project.Path
@@ -180,9 +180,9 @@ func main() {
 			port, err := reader.ReadString('\n')
 			if err != nil {
 				if model.DEBUG {
-					fmt.Print(err)
+					fmt.Println(err)
 				} else {
-					fmt.Print("Error while setup port")
+					fmt.Println("Error while setup port")
 				}
 				continueProcess = false
 			} else {
@@ -196,9 +196,9 @@ func main() {
 			name, err := reader.ReadString('\n')
 			if err != nil {
 				if model.DEBUG {
-					fmt.Print(err)
+					fmt.Println(err)
 				} else {
-					fmt.Print("Error while setup username")
+					fmt.Println("Error while setup username")
 				}
 				continueProcess = false
 			} else {
@@ -211,9 +211,9 @@ func main() {
 			bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
 			if err != nil {
 				if model.DEBUG {
-					fmt.Print(err)
+					fmt.Println(err)
 				} else {
-					fmt.Print("Error while setup password")
+					fmt.Println("Error while setup password")
 				}
 				continueProcess = false
 			}
@@ -222,7 +222,7 @@ func main() {
 			if continueProcess {
 				keyringModel.Password = strings.TrimSuffix(string(bytePassword), "\n")
 				if keyringModel.Exist(cfg) {
-					fmt.Printf("Keyring SSH for %s with username %s is exist", keyringModel.Host, keyringModel.Username)
+					fmt.Printf("Keyring SSH for %s with username %s is exist \n", keyringModel.Host, keyringModel.Username)
 				} else {
 					keyringModel.SaveFull(cfg)
 				}
@@ -234,9 +234,9 @@ func main() {
 		var keyring = model.GetKeyringFromString(args.Kr)
 		if keyring.Username != "" && keyring.Host != "" {
 			keyring.RemoveFromAll(cfg)
-			fmt.Printf("Success Delete %s with username %s", keyring.Host, keyring.Username)
+			fmt.Printf("Success Delete %s with username %s \n", keyring.Host, keyring.Username)
 		} else {
-			fmt.Print("Please specified keyring to delete eg. root@123.123.132.123")
+			fmt.Println("Please specified keyring to delete eg. root@123.123.132.123")
 		}
 	}
 
@@ -248,9 +248,9 @@ func main() {
 			client, err := system.DialWithPasswd(keyring.GetHostPort(), keyring.Username, keyring.Password)
 			if err != nil {
 				if model.DEBUG {
-					fmt.Print(err)
+					fmt.Println(err)
 				} else {
-					fmt.Print("Make sure username, password and port is correct")
+					fmt.Println("Make sure username, password and port is correct")
 				}
 				continueProcess = false
 			}
@@ -258,14 +258,14 @@ func main() {
 				defer client.Close()
 				if err := client.Terminal(nil).Start(); err != nil {
 					if model.DEBUG {
-						fmt.Print(err)
+						fmt.Println(err)
 					} else {
-						fmt.Print("Cannot open interactive shell")
+						fmt.Println("Cannot open interactive shell")
 					}
 				}
 			}
 		} else {
-			fmt.Print("Please specified keyring eg. root@123.123.132.123")
+			fmt.Println("Please specified keyring eg. root@123.123.132.123")
 		}
 	}
 

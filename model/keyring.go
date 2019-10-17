@@ -53,9 +53,9 @@ func (keyringModel Keyring) SaveToConfiguration(configuration Configuration) {
 	err := ioutil.WriteFile(configuration.GetKeyringConfigFilePath(), dataToml, 0644)
 	if err != nil {
 		if DEBUG {
-			log.Print(err)
+			log.Println(err)
 		} else {
-			fmt.Printf("Cannot save keyring configuration")
+			fmt.Println("Cannot save keyring configuration")
 		}
 	}
 }
@@ -85,9 +85,9 @@ func (keyringModel Keyring) RemoveFromConfiguration(configuration Configuration)
 	err := ioutil.WriteFile(configuration.GetKeyringConfigFilePath(), dataToml, 0644)
 	if err != nil {
 		if DEBUG {
-			log.Print(err)
+			log.Println(err)
 		} else {
-			fmt.Printf("Failed to remove keyring from configuration")
+			fmt.Println("Failed to remove keyring from configuration")
 		}
 	}
 }
