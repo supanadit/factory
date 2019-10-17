@@ -11,7 +11,7 @@ import (
 )
 
 // Constant Value
-const DEBUG bool = false
+const DEBUG bool = true
 const SystemName string = "DevOpsFactory" // Don't Use any Space
 const DirectoryName string = "DevOpsFactory"
 const ProjectDirectoryName string = "Project"
