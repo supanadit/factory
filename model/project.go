@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"github.com/naoina/toml"
+	"gopkg.in/src-d/go-git.v4"
 	"io/ioutil"
 	"log"
 )
@@ -10,7 +11,6 @@ import (
 type Project struct {
 	ProjectName string
 	Alias       string
-	Git         Git
 	Path        string
 }
 
@@ -46,7 +46,6 @@ func (project Project) ExistByAlias(configuration Configuration) (bool, Project)
 			projectFounded.Alias = element.Alias
 			projectFounded.ProjectName = element.ProjectName
 			projectFounded.Path = element.Path
-			projectFounded.Git = element.Git
 		}
 	}
 	return found, projectFounded
@@ -55,7 +54,6 @@ func (project Project) ExistByAlias(configuration Configuration) (bool, Project)
 func (project Project) FillFromAlias(configuration Configuration) (bool, Project) {
 	exist, projectData := project.ExistByAlias(configuration)
 	if exist {
-		project.Git = projectData.Git
 		project.Path = projectData.Path
 		project.ProjectName = projectData.ProjectName
 		project.Alias = projectData.Alias
@@ -82,4 +80,32 @@ func (project Project) Remove(configuration Configuration) {
 	} else {
 		fmt.Println("Project Removed")
 	}
+}
+
+func (project Project) GitRepository(configuration Configuration) (*git.Repository, bool) {
+	r, err := git.PlainOpen(project.Path)
+	exist := true
+	if err != nil {
+		exist = false
+		if DEBUG {
+			fmt.Println(err)
+		} else {
+			fmt.Printf("Cannot open Repository for Project %s \n", project.ProjectName)
+		}
+	}
+	return r, exist
+}
+
+func (project Project) UrlRepository(configuration Configuration) string {
+	r, exist := project.GitRepository(configuration)
+	var err error
+	url := ""
+	if exist {
+		var remotes []*git.Remote
+		remotes, err = r.Remotes()
+		if err == nil {
+			url = remotes[0].Config().URLs[0]
+		}
+	}
+	return url
 }

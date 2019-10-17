@@ -24,6 +24,7 @@ type args struct {
 	Pe string `arg:"separate" help:"New Project From Existing Repository"`
 	Pr string `arg:"separate" help:"Remove Project"`
 	Pl bool   `arg:"separate" help:"Project List"`
+	Pu string `arg:"separate" help:"Project Git Update"`
 	Kn string `arg:"separate" help:"New SSH Keyring"`
 	Kr string `arg:"separate" help:"Remove SSH Keyring"`
 	Kc string `arg:"separate" help:"Connect to SSH"`
@@ -39,7 +40,7 @@ func main() {
 	arg.MustParse(&args)
 	cfg := model.LoadDefaultConfiguration()
 
-	if args.Pn == "" && args.Pe == "" && args.Pr == "" && !args.Pl && args.Kn == "" && args.Kr == "" && args.Kc == "" && !args.Kl {
+	if args.Pn == "" && args.Pe == "" && args.Pr == "" && !args.Pl && args.Pu != "" && args.Kn == "" && args.Kr == "" && args.Kc == "" && !args.Kl {
 		fmt.Println("Cross Platform Swiss Army Knife for DevOps")
 	}
 
@@ -60,13 +61,10 @@ func main() {
 		fmt.Print("URL Git Repository : ")
 		urlGit, _ := reader.ReadString('\n')
 
-		var gitModel model.Git
-		gitModel.Url = strings.TrimSuffix(urlGit, "\n")
-		gitModel.Path = project.Path
-		project.Git = gitModel
+		urlGitConversion := strings.TrimSuffix(urlGit, "\n")
 
-		_, err := git.PlainClone(gitModel.Path, false, &git.CloneOptions{
-			URL:      gitModel.Url,
+		_, err := git.PlainClone(urlGitConversion, false, &git.CloneOptions{
+			URL:      urlGitConversion,
 			Progress: os.Stdout,
 		})
 		if err != nil {
@@ -75,7 +73,7 @@ func main() {
 			} else {
 				fmt.Printf("Make sure URL Repository is correct \n")
 			}
-			_ = os.RemoveAll(gitModel.Path)
+			_ = os.RemoveAll(project.Path)
 			continueProcess = false
 		}
 		if continueProcess {
@@ -99,6 +97,7 @@ func main() {
 			project.Alias = alias
 			project.Path = existingProject
 			r, err := git.PlainOpen(project.Path)
+			// @TODO: Simplify the code
 			if err != nil {
 				if model.DEBUG {
 					log.Print(err)
@@ -127,10 +126,6 @@ func main() {
 						if len(remotes) == 0 {
 							fmt.Println("No Remote Repository exist")
 						} else {
-							var gitProject model.Git
-							gitProject.Path = project.Path
-							gitProject.Url = remotes[0].Config().URLs[0]
-							project.Git = gitProject
 							project.Save(cfg)
 						}
 					}
@@ -161,7 +156,7 @@ func main() {
 				strconv.Itoa(i + 1),
 				element.ProjectName,
 				element.Alias,
-				element.Git.Url,
+				element.UrlRepository(cfg),
 			}
 			data = append(data, newData)
 		}
@@ -169,6 +164,18 @@ func main() {
 		table.SetHeader([]string{"No", "Project Name", "Alias", "Repository URL"})
 		table.AppendBulk(data)
 		table.Render()
+	}
+
+	if args.Pu != "" {
+		var project model.Project
+		exist := false
+		project.Alias = args.Pr
+		exist, project = project.ExistByAlias(cfg)
+		if exist {
+
+		} else {
+			fmt.Printf("Project with alias %s is not exist \n", args.Pr)
+		}
 	}
 
 	if args.Kn != "" {
