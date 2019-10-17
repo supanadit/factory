@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/olekukonko/tablewriter"
 	"github.com/supanadit/devops-factory/system"
+	gittype "github.com/supanadit/git-type"
 	"golang.org/x/crypto/ssh/terminal"
 	"gopkg.in/src-d/go-git.v4"
 	"log"
@@ -62,21 +63,48 @@ func main() {
 		urlGit, _ := reader.ReadString('\n')
 
 		urlGitConversion := strings.TrimSuffix(urlGit, "\n")
-		_, err := git.PlainClone(project.Path, false, &git.CloneOptions{
-			URL:      urlGitConversion,
-			Progress: os.Stdout,
-		})
+		gitType, err := gittype.NewGitType(urlGitConversion)
 		if err != nil {
-			if model.DEBUG {
-				log.Print(err)
-			} else {
-				fmt.Printf("Make sure URL Repository is correct \n")
+			fmt.Println(err)
+		} else {
+			if gitType.IsSSH() {
+				_, err = git.PlainClone(project.Path, false, &git.CloneOptions{
+					URL:      urlGitConversion,
+					Progress: os.Stdout,
+					Auth:     model.GetPublicKey(),
+				})
+				if err != nil {
+					if model.DEBUG {
+						log.Print(err)
+					} else {
+						fmt.Printf("Make sure URL Repository is correct \n")
+					}
+					_ = os.RemoveAll(project.Path)
+					continueProcess = false
+				}
+				if continueProcess {
+					continueProcess = project.Save(cfg)
+				}
 			}
-			_ = os.RemoveAll(project.Path)
-			continueProcess = false
-		}
-		if continueProcess {
-			continueProcess = project.Save(cfg)
+
+			if gitType.IsHTTPORS() {
+				_, err = git.PlainClone(project.Path, false, &git.CloneOptions{
+					URL:      urlGitConversion,
+					Progress: os.Stdout,
+				})
+				if err != nil {
+					if model.DEBUG {
+						log.Print(err)
+					} else {
+						fmt.Printf("Make sure URL Repository is correct \n")
+					}
+					_ = os.RemoveAll(project.Path)
+					continueProcess = false
+				}
+				if continueProcess {
+					continueProcess = project.Save(cfg)
+				}
+			}
 		}
 	}
 
@@ -177,20 +205,28 @@ func main() {
 			if exist {
 				var workTree *git.Worktree
 				var err error
-				workTree, err = repository.Worktree()
-				if err == nil {
-					err = workTree.Pull(&git.PullOptions{
-						Progress: os.Stdout,
-					})
-					if err != nil {
-						if model.DEBUG {
-							fmt.Println(err)
-						} else {
-							fmt.Println("Cannot Update Repository")
-						}
-					}
+				gitType, err := gittype.NewGitType(project.UrlRepository(cfg))
+				if err != nil {
+					fmt.Println(err)
 				} else {
-					fmt.Println("Cannot getting Work Tree from the Repository")
+					workTree, err = repository.Worktree()
+					if err == nil {
+						if gitType.IsSSH() {
+							err = workTree.Pull(&git.PullOptions{
+								Progress: os.Stdout,
+								Auth:     model.GetPublicKey(),
+							})
+						} else {
+							err = workTree.Pull(&git.PullOptions{
+								Progress: os.Stdout,
+							})
+						}
+						if err != nil {
+							fmt.Println(err)
+						}
+					} else {
+						fmt.Println("Cannot getting Work Tree from the Repository")
+					}
 				}
 			} else {
 				fmt.Println("Make sure repository exist")
