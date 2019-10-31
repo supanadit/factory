@@ -59,6 +59,8 @@ The release version will be available in version 1.0.0 Beta, and this software i
 - Support Instant Deploy by running `devops-factory -i github-project`
 - Support SQL Database Backup, eg. Postgre SQL, MySQL, etc
 - Support Non SQL Database backup eg. MongoDB, Pouch DB, Rethink DB, etc
+- Support Tag a Directory
+- Support Connect to SSH by Alias
 
 ### Support Me
 [![https://patreon.com/supanadit](https://c5.patreon.com/external/logo/become_a_patron_button@2x.png)](http://patreon.com/supanadit)
