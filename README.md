@@ -37,6 +37,7 @@ The release version will be available in version 1.0.0 Beta, and this software i
 - Auto Create Folder `DevOpsFactory` in Home Folder
 
 ### Todo
+- Docker Integration
 - Kubernetes Integration
 - Support Continues Integration
 - FTP and SFTP Integration
@@ -56,6 +57,8 @@ The release version will be available in version 1.0.0 Beta, and this software i
 - Check version of each package
 - Support Deploy by running `devops-factory -p test-project -t 123.123.123.123 -d "/var/www/test"`
 - Support Instant Deploy by running `devops-factory -i github-project`
+- Support SQL Database Backup, eg. Postgre SQL, MySQL, etc
+- Support Non SQL Database backup eg. MongoDB, Pouch DB, Rethink DB, etc
 
 ### Support Me
 [![https://patreon.com/supanadit](https://c5.patreon.com/external/logo/become_a_patron_button@2x.png)](http://patreon.com/supanadit)
