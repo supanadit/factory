@@ -1,4 +1,4 @@
-![Logo](http://supanadit.com/wp-content/uploads/2019/10/DevOps-Factory-Logo.png)
+![Logo](http://supanadit.com/wp-content/uploads/2019/11/DevOps-Factory-Logo.png)
 # DevOps Factory
 Cross Platform Swiss Army Knife for DevOps
 
