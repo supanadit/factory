@@ -2,11 +2,14 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
+	"github.com/google/go-github/github"
 	"github.com/olekukonko/tablewriter"
 	"github.com/supanadit/devops-factory/system"
 	"github.com/supanadit/git-type"
 	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/oauth2"
 	"gopkg.in/src-d/go-git.v4"
 	"log"
 	"os"
@@ -31,6 +34,7 @@ type args struct {
 	Kr  string `arg:"separate" help:"Remove SSH Keyring"`
 	Kc  string `arg:"separate" help:"Connect to SSH"`
 	Kl  bool   `arg:"separate" help:"List SSH Keyring"`
+	Gl  bool   `arg:"separate" help:"Github Repository List"`
 }
 
 func (args) Version() string {
@@ -38,11 +42,12 @@ func (args) Version() string {
 }
 
 func main() {
+	token := ""
 	var args args
 	arg.MustParse(&args)
 	cfg := model.LoadDefaultConfiguration()
 
-	if args.Pn == "" && args.Pe == "" && args.Pr == "" && !args.Pl && args.Pu == "" && args.Pwd == "" && args.Kn == "" && args.Kr == "" && args.Kc == "" && !args.Kl {
+	if args.Pn == "" && args.Pe == "" && args.Pr == "" && !args.Pl && args.Pu == "" && args.Pwd == "" && args.Kn == "" && args.Kr == "" && args.Kc == "" && !args.Kl && !args.Gl {
 		fmt.Println("Cross Platform Swiss Army Knife for DevOps")
 	}
 
@@ -363,5 +368,47 @@ func main() {
 		table.SetHeader([]string{"No", "Username", "Host", "Port"})
 		table.AppendBulk(data)
 		table.Render()
+	}
+
+	if args.Gl {
+		ctx := context.Background()
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: token},
+		)
+		tc := oauth2.NewClient(ctx, ts)
+
+		client := github.NewClient(tc)
+
+		opt := &github.RepositoryListOptions{
+			ListOptions: github.ListOptions{PerPage: 100},
+		}
+		// get all pages of results
+		var allRepos [][]string
+		total := 0
+		for {
+			repos, resp, err := client.Repositories.List(ctx, "", opt)
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				for _, y := range repos {
+					total += 1
+					newRepos := []string{
+						strconv.Itoa(total),
+						y.GetURL(),
+					}
+					allRepos = append(allRepos, newRepos)
+				}
+				if resp.NextPage == 0 {
+					break
+				}
+				opt.Page = resp.NextPage
+			}
+		}
+		if total != 0 {
+			table := tablewriter.NewWriter(os.Stdout)
+			table.SetHeader([]string{"No", "URL Repository"})
+			table.AppendBulk(allRepos)
+			table.Render()
+		}
 	}
 }
