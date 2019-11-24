@@ -15,14 +15,17 @@ const DEBUG bool = true
 const SystemName string = "DevOpsFactory" // Don't Use any Space
 const DirectoryName string = "DevOpsFactory"
 const ProjectDirectoryName string = "Project"
-const ProjectFileName string = "projects.toml" // Format Must Be TOML
-const KeyringFileName string = "keyring.toml"  // Format Must Be TOML
+
+const ProjectFileName string = "projects.toml"            // Format Must Be TOML
+const ConfigurationFileName string = "configuration.toml" // Format Must Be TOML
+const KeyringFileName string = "keyring.toml"             // Format Must Be TOML
+
+const ConfirmationDeleteForkedRepository = "I AM REALLY SURE TO DELETE ALL FORKED REPOSITORY"
 
 // Default Configuration
 type Configuration struct {
-	Home      string
-	Directory string
-	Project   string
+	Home   string
+	Github Github
 }
 
 type ProjectConfiguration struct {
@@ -33,7 +36,7 @@ type KeyringConfiguration struct {
 	Keyring []Keyring
 }
 
-func LoadDefaultConfiguration() Configuration {
+func DefaultConfiguration() Configuration {
 	usr, err := user.Current()
 	if err != nil {
 		if DEBUG {
@@ -42,36 +45,62 @@ func LoadDefaultConfiguration() Configuration {
 			log.Fatal("Can't get user home directory path")
 		}
 	}
-	newConfiguration := Configuration{
-		Home:      usr.HomeDir,
-		Directory: DirectoryName,
-		Project:   ProjectDirectoryName,
+	configuration := Configuration{
+		Home: usr.HomeDir,
+		Github: Github{
+			ID:       -1,
+			Name:     "",
+			Token:    "",
+			Username: "",
+		},
 	}
-	newPathDirectory := newConfiguration.GetDirectoryPath()
+	return configuration
+}
+
+func LoadConfiguration() Configuration {
+	configuration, _ := GetConfiguration()
+
+	newPathDirectory := configuration.GetDirectoryPath()
 	if _, err := os.Stat(newPathDirectory); os.IsNotExist(err) {
 		_ = os.Mkdir(newPathDirectory, os.ModePerm)
 	}
-	newPathProject := newConfiguration.GetProjectPath()
+	newPathProject := configuration.GetProjectPath()
 	if _, err := os.Stat(newPathProject); os.IsNotExist(err) {
 		_ = os.Mkdir(newPathProject, os.ModePerm)
 	}
-	return newConfiguration
+	return configuration
 }
 
-func (config Configuration) GetDirectoryPath() string {
-	return config.Home + "/" + config.Directory
+func (configuration Configuration) SaveConfiguration() {
+	dataToml, _ := toml.Marshal(&configuration)
+	err := ioutil.WriteFile(configuration.GetConfigFilePath(), dataToml, 0644)
+	if err != nil {
+		if DEBUG {
+			log.Println(err)
+		} else {
+			fmt.Println("Cannot save configuration")
+		}
+	}
 }
 
-func (config Configuration) GetProjectPath() string {
-	return config.GetDirectoryPath() + "/" + config.Project
+func (configuration Configuration) GetDirectoryPath() string {
+	return configuration.Home + "/" + DirectoryName
 }
 
-func (config Configuration) GetProjectConfigFilePath() string {
-	return config.GetProjectPath() + "/" + ProjectFileName
+func (configuration Configuration) GetProjectPath() string {
+	return configuration.GetDirectoryPath() + "/" + ProjectDirectoryName
 }
 
-func (config Configuration) GetKeyringConfigFilePath() string {
-	return config.GetDirectoryPath() + "/" + KeyringFileName
+func (configuration Configuration) GetProjectConfigFilePath() string {
+	return configuration.GetProjectPath() + "/" + ProjectFileName
+}
+
+func (configuration Configuration) GetKeyringConfigFilePath() string {
+	return configuration.GetDirectoryPath() + "/" + KeyringFileName
+}
+
+func (configuration Configuration) GetConfigFilePath() string {
+	return configuration.GetDirectoryPath() + "/" + ConfigurationFileName
 }
 
 func GetAllProjectConfiguration(configuration Configuration) ProjectConfiguration {
@@ -111,4 +140,32 @@ func GetPublicKey() *ssh.PublicKeys {
 		fmt.Println("Invalid SSH Key")
 	}
 	return publicKey
+}
+
+func GetConfiguration() (Configuration, error) {
+	configuration := DefaultConfiguration()
+	info, configError := os.Stat(configuration.GetConfigFilePath())
+	fileConfigurationExist := true
+	if os.IsNotExist(configError) {
+		fileConfigurationExist = false
+	} else {
+		fileConfigurationExist = !info.IsDir()
+	}
+
+	if !fileConfigurationExist {
+		configuration.SaveConfiguration()
+	} else {
+		fileConfig, configError := os.Open(configuration.GetConfigFilePath())
+		if configError != nil {
+			if DEBUG {
+				panic(configError)
+			}
+		}
+		if configError = toml.NewDecoder(fileConfig).Decode(&configuration); configError != nil {
+			if DEBUG {
+				panic(configError)
+			}
+		}
+	}
+	return configuration, configError
 }

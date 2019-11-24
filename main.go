@@ -2,14 +2,12 @@ package main
 
 import (
 	"bufio"
-	"context"
 	"fmt"
 	"github.com/google/go-github/github"
 	"github.com/olekukonko/tablewriter"
 	"github.com/supanadit/devops-factory/system"
 	"github.com/supanadit/git-type"
 	"golang.org/x/crypto/ssh/terminal"
-	"golang.org/x/oauth2"
 	"gopkg.in/src-d/go-git.v4"
 	"log"
 	"os"
@@ -24,17 +22,20 @@ import (
 )
 
 type args struct {
-	Pn  string `arg:"separate" help:"New Project"`
-	Pe  string `arg:"separate" help:"New Project From Existing Repository"`
-	Pr  string `arg:"separate" help:"Remove Project"`
-	Pl  bool   `arg:"separate" help:"Project List"`
-	Pu  string `arg:"separate" help:"Project Git Update"`
-	Pwd string `arg:"separate" help:"Get Full Path of Project Directory"`
-	Kn  string `arg:"separate" help:"New SSH Keyring"`
-	Kr  string `arg:"separate" help:"Remove SSH Keyring"`
-	Kc  string `arg:"separate" help:"Connect to SSH"`
-	Kl  bool   `arg:"separate" help:"List SSH Keyring"`
-	Gl  bool   `arg:"separate" help:"Github Repository List"`
+	Pn   string `arg:"separate" help:"New Project"`
+	Pe   string `arg:"separate" help:"New Project From Existing Repository"`
+	Pr   string `arg:"separate" help:"Remove Project"`
+	Pl   bool   `arg:"separate" help:"Project List"`
+	Pu   string `arg:"separate" help:"Project Git Update"`
+	Pwd  string `arg:"separate" help:"Get Full Path of Project Directory"`
+	Kn   string `arg:"separate" help:"New SSH Keyring"`
+	Kr   string `arg:"separate" help:"Remove SSH Keyring"`
+	Kc   string `arg:"separate" help:"Connect to SSH"`
+	Kl   bool   `arg:"separate" help:"List SSH Keyring"`
+	Gl   bool   `arg:"separate" help:"Github Repository List"`
+	Gt   string `arg:"separate" help:"Set Github Token"`
+	Glf  bool   `arg:"separate" help:"Github Forked Repository List"`
+	Glfd bool   `arg:"separate" help:"Delete all Forked Repository"`
 }
 
 func (args) Version() string {
@@ -42,12 +43,13 @@ func (args) Version() string {
 }
 
 func main() {
-	token := ""
 	var args args
 	arg.MustParse(&args)
-	cfg := model.LoadDefaultConfiguration()
+	cfg := model.LoadConfiguration()
+	githubModel := cfg.Github
+	ctx := githubModel.Context()
 
-	if args.Pn == "" && args.Pe == "" && args.Pr == "" && !args.Pl && args.Pu == "" && args.Pwd == "" && args.Kn == "" && args.Kr == "" && args.Kc == "" && !args.Kl && !args.Gl {
+	if args.Pn == "" && args.Pe == "" && args.Pr == "" && !args.Pl && args.Pu == "" && args.Pwd == "" && args.Kn == "" && args.Kr == "" && args.Kc == "" && !args.Kl && !args.Gl && args.Gt == "" && !args.Glf && !args.Glfd {
 		fmt.Println("Cross Platform Swiss Army Knife for DevOps")
 	}
 
@@ -371,44 +373,146 @@ func main() {
 	}
 
 	if args.Gl {
-		ctx := context.Background()
-		ts := oauth2.StaticTokenSource(
-			&oauth2.Token{AccessToken: token},
-		)
-		tc := oauth2.NewClient(ctx, ts)
+		if model.VerifyGithub(githubModel) {
+			client := githubModel.Client()
 
-		client := github.NewClient(tc)
-
-		opt := &github.RepositoryListOptions{
-			ListOptions: github.ListOptions{PerPage: 100},
-		}
-		// get all pages of results
-		var allRepos [][]string
-		total := 0
-		for {
-			repos, resp, err := client.Repositories.List(ctx, "", opt)
-			if err != nil {
-				fmt.Println(err)
-			} else {
-				for _, y := range repos {
-					total += 1
-					newRepos := []string{
-						strconv.Itoa(total),
-						y.GetURL(),
+			opt := &github.RepositoryListOptions{
+				ListOptions: github.ListOptions{PerPage: 100},
+			}
+			// get all pages of results
+			var allRepos [][]string
+			total := 0
+			for {
+				repos, resp, err := client.Repositories.List(ctx, "", opt)
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					for _, y := range repos {
+						if !y.GetFork() {
+							total += 1
+							newRepos := []string{
+								strconv.Itoa(total),
+								y.GetCloneURL(),
+							}
+							allRepos = append(allRepos, newRepos)
+						}
 					}
-					allRepos = append(allRepos, newRepos)
+					if resp.NextPage == 0 {
+						break
+					}
+					opt.Page = resp.NextPage
 				}
-				if resp.NextPage == 0 {
-					break
-				}
-				opt.Page = resp.NextPage
+			}
+			if total != 0 {
+				table := tablewriter.NewWriter(os.Stdout)
+				table.SetHeader([]string{"No", "URL Repository"})
+				table.AppendBulk(allRepos)
+				table.Render()
 			}
 		}
-		if total != 0 {
-			table := tablewriter.NewWriter(os.Stdout)
-			table.SetHeader([]string{"No", "URL Repository"})
-			table.AppendBulk(allRepos)
-			table.Render()
+	}
+
+	if args.Gt != "" {
+		cfg.SetToken(args.Gt)
+	}
+
+	if args.Glf {
+		if model.VerifyGithub(githubModel) {
+			client := githubModel.Client()
+
+			opt := &github.RepositoryListOptions{
+				ListOptions: github.ListOptions{PerPage: 100},
+			}
+			// get all pages of results
+			var allRepos [][]string
+			total := 0
+			for {
+				repos, resp, err := client.Repositories.List(ctx, "", opt)
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					for _, y := range repos {
+						if y.GetFork() {
+							total += 1
+							newRepos := []string{
+								strconv.Itoa(total),
+								y.GetCloneURL(),
+							}
+							allRepos = append(allRepos, newRepos)
+						}
+					}
+					if resp.NextPage == 0 {
+						break
+					}
+					opt.Page = resp.NextPage
+				}
+			}
+			if total != 0 {
+				table := tablewriter.NewWriter(os.Stdout)
+				table.SetHeader([]string{"No", "URL Repository"})
+				table.AppendBulk(allRepos)
+				table.Render()
+			}
+		}
+	}
+
+	if args.Glfd {
+		readerYn := bufio.NewReader(os.Stdin)
+		fmt.Print("Are you sure to delete all forked repository ? [y/N] ")
+		yNConfirmation, _ := readerYn.ReadString('\n')
+		yNConfirmationConversion := strings.TrimSuffix(yNConfirmation, "\n")
+		if yNConfirmationConversion == "y" || yNConfirmationConversion == "Y" {
+			readerConfirmation := bufio.NewReader(os.Stdin)
+			fmt.Print("Please type \"" + model.ConfirmationDeleteForkedRepository + "\" for continue \n")
+			confirmation, _ := readerConfirmation.ReadString('\n')
+			confirmationConversion := strings.TrimSuffix(confirmation, "\n")
+			if confirmationConversion == model.ConfirmationDeleteForkedRepository {
+				client := githubModel.Client()
+
+				opt := &github.RepositoryListOptions{
+					ListOptions: github.ListOptions{PerPage: 100},
+				}
+				// get all pages of results
+				var allRepos [][]string
+				total := 0
+				for {
+					repos, resp, err := client.Repositories.List(ctx, "", opt)
+					if err != nil {
+						fmt.Println(err)
+					} else {
+						for _, y := range repos {
+							if y.GetFork() {
+								total += 1
+								_, err := client.Repositories.Delete(ctx, githubModel.Username, *y.Name)
+								deleted := true
+								if err != nil {
+									deleted = false
+								}
+								deletedString := "Failed to Delete Repository"
+								if deleted {
+									deletedString = "Repository have been deleted"
+								}
+								newRepos := []string{
+									strconv.Itoa(total),
+									y.GetCloneURL(),
+									deletedString,
+								}
+								allRepos = append(allRepos, newRepos)
+							}
+						}
+						if resp.NextPage == 0 {
+							break
+						}
+						opt.Page = resp.NextPage
+					}
+				}
+				if total != 0 {
+					table := tablewriter.NewWriter(os.Stdout)
+					table.SetHeader([]string{"No", "Deleted Forked Repository", "Status"})
+					table.AppendBulk(allRepos)
+					table.Render()
+				}
+			}
 		}
 	}
 }
