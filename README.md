@@ -69,7 +69,7 @@ The release version will be available in version 1.0.0 Beta, and this software i
 - Support Connect to SSH by Alias
 - Update forked repository from Github
 - Delete forked repository with Whitelist and Blacklist Support
-- Maximum value for deleting repository is between 84 and 184, and it be must requested each 84 and 184 repositories if the forked repository more than 84 and 184
+- Maximum value for deleting repository is between 84 and 184, and it be must requested each 84 and 184 repositories if, the forked repository more than 84 and 184
 
 ### Support Me
 [![https://patreon.com/supanadit](https://c5.patreon.com/external/logo/become_a_patron_button@2x.png)](http://patreon.com/supanadit)
