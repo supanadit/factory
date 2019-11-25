@@ -7,10 +7,10 @@ The release version will be available in version 1.0.0 Beta, and this software i
 
 ### Changelog
 #### Version 0.0.6 Alpha
-- Github integration by token
-- Get all own repository from Github
-- Get all forked repository from Github
-- Delete all forked repository from Github
+- Github integration by token `devops-factory --gt <your_github_token>`
+- Get all own repository from Github `devops-factory --gl`
+- Get all forked repository from Github `devops-factory --glf`
+- Delete all forked repository from Github `devops-factory --glfd`
 
 #### Version 0.0.5 Alpha
 - Support SSH Authentication for Git Repository
