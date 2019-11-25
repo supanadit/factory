@@ -2,9 +2,6 @@
 # DevOps Factory
 Cross Platform Swiss Army Knife for DevOps
 
-### Description
-The release version will be available in version 1.0.0 Beta, and this software is the alternative of [Operation X](https://github.com/supanadit/operation-deploy-center-engine)
-
 ### Changelog
 #### Version 0.0.6 Alpha
 - Github integration by token `devops-factory --gt <your_github_token>`
