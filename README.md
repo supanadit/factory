@@ -6,6 +6,12 @@ Cross Platform Swiss Army Knife for DevOps
 The release version will be available in version 1.0.0 Beta, and this software is the alternative of [Operation X](https://github.com/supanadit/operation-deploy-center-engine)
 
 ### Changelog
+#### Version 0.0.6 Alpha
+- Github integration by token
+- Get all own repository from Github
+- Get all forked repository from Github
+- Delete all forked repository from Github
+
 #### Version 0.0.5 Alpha
 - Support SSH Authentication for Git Repository
 - Support Update Repository
@@ -61,11 +67,9 @@ The release version will be available in version 1.0.0 Beta, and this software i
 - Support Non SQL Database backup eg. MongoDB, Pouch DB, Rethink DB, etc
 - Support Tag a Directory
 - Support Connect to SSH by Alias
-- Github integration by token ( OK )
-- Get all repository from Github ( OK )
-- Delete forked repository from Github ( OK ) *Maximum value for deleting repository is between 84 and 184, and it be must requested each 84 and 184 repositories if have more than 84 and 184 forked repositories
 - Update forked repository from Github
 - Delete forked repository with Whitelist and Blacklist Support
+- Maximum value for deleting repository is between 84 and 184, and it be must requested each 84 and 184 repositories if the forked repository more than 84 and 184
 
 ### Support Me
 [![https://patreon.com/supanadit](https://c5.patreon.com/external/logo/become_a_patron_button@2x.png)](http://patreon.com/supanadit)
