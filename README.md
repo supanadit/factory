@@ -67,6 +67,7 @@ Cross Platform Swiss Army Knife for DevOps
 - Update forked repository from Github
 - Delete forked repository with Whitelist and Blacklist Support
 - Maximum value for deleting repository is between 84 and 184, and it be must requested each 84 and 184 repositories if, the forked repository more than 84 and 184
+- Create Project Instantly for Golang, Laravel, etc
 
 ### Support Me
 [![https://patreon.com/supanadit](https://c5.patreon.com/external/logo/become_a_patron_button@2x.png)](http://patreon.com/supanadit)
