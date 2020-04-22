@@ -1,5 +1,5 @@
-# DevOps Factory
-Cross Platform Swiss Army Knife for DevOps
+# Factory
+Cross Platform Swiss Army Knife for IT Department
 
 ### Todo
 - Docker Integration
@@ -17,11 +17,11 @@ Cross Platform Swiss Army Knife for DevOps
 - Versioning Repository
 - Backup All Repository
 - Environment Support
-- Web GUI for `devops-factory --serve`
+- Web GUI for `fy --serve`
 - Manage package for NodeJS, PHP, Flutter, Python, etc.
 - Check version of each package
-- Support Deploy by running `devops-factory -p test-project -t 123.123.123.123 -d "/var/www/test"`
-- Support Instant Deploy by running `devops-factory -i github-project`
+- Support Deploy by running `fy -p test-project -t 123.123.123.123 -d "/var/www/test"`
+- Support Instant Deploy by running `fy -i github-project`
 - Support SQL Database Backup, eg. Postgre SQL, MySQL, etc
 - Support Non SQL Database backup eg. MongoDB, Pouch DB, Rethink DB, etc
 - Support Tag a Directory
