@@ -6,7 +6,7 @@ import (
 	"github.com/google/go-github/github"
 	"github.com/olekukonko/tablewriter"
 	"github.com/supanadit/devops-factory/system"
-	"github.com/supanadit/git-type"
+	"github.com/supanadit/gity"
 	"golang.org/x/crypto/ssh/terminal"
 	"gopkg.in/src-d/go-git.v4"
 	"log"
@@ -71,7 +71,7 @@ func main() {
 		urlGit, _ := reader.ReadString('\n')
 
 		urlGitConversion := strings.TrimSuffix(urlGit, "\n")
-		gitType, err := gittype.NewGitType(urlGitConversion)
+		gitType, err := gity.Check(urlGitConversion)
 		if err != nil {
 			fmt.Println(err)
 		} else {
@@ -213,7 +213,7 @@ func main() {
 			if exist {
 				var workTree *git.Worktree
 				var err error
-				gitType, err := gittype.NewGitType(project.UrlRepository(cfg))
+				gitType, err := gity.Check(project.UrlRepository(cfg))
 				if err != nil {
 					fmt.Println(err)
 				} else {
