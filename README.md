@@ -31,7 +31,7 @@ Cross Platform Swiss Army Knife for IT Department
 - Support Connect to SSH by Alias
 - Update forked repository from Github
 - Delete forked repository with Whitelist and Blacklist Support
-- Maximum value for deleting repository is in between 84 and 184, and it be must requested each 84 or 184 repositories if the forked repository more than 84 or 184
+- Fix bug maximum value for deleting repository is in between 84 and 184, and it be must requested each 84 or 184 repositories if the forked repository more than 84 or 184
 - Create Project Instantly for Golang, Laravel, etc
 
 ### Support Me
