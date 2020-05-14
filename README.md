@@ -1,4 +1,7 @@
 # Factory
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/supanadit/factory)](https://goreportcard.com/report/github.com/supanadit/factory)
+
 Cross Platform Swiss Army Knife for IT Department
 
 ### Todo
