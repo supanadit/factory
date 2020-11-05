@@ -13,7 +13,7 @@ Cross Platform Swiss Army Knife for IT Department
 - Run Script Only on Remote Server
 - Deploy Repository and Run Script
 - Deploy Repository using Standard Method (PHP, Python, Static HTML, etc)
-- Build Server Version of DevOps Factory
+- Build Server Version of Factory
 - Deploy to Multi Server
 - Build Multi Release App (Flutter, Angular, Java, etc)
 - Support Auto Backup

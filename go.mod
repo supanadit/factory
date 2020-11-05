@@ -12,7 +12,6 @@ require (
 	github.com/naoina/toml v0.1.1
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/ozgio/strutil v0.3.0
-	github.com/supanadit/devops-factory v0.0.0-20200423005254-8e2a2c3fc028
 	github.com/supanadit/gity v1.0.1
 	golang.org/x/crypto v0.0.0-20200422194213-44a606286825
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d

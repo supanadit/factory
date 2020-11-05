@@ -39,7 +39,7 @@ type args struct {
 }
 
 func (args) Version() string {
-	return "DevOps Factory 0.0.4 Alpha"
+	return "Factory 0.0.1 Alpha"
 }
 
 func main() {
