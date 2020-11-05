@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/google/go-github/github"
 	"github.com/olekukonko/tablewriter"
-	"github.com/supanadit/devops-factory/system"
+	"github.com/supanadit/factory/system"
 	"github.com/supanadit/gity"
 	"golang.org/x/crypto/ssh/terminal"
 	"gopkg.in/src-d/go-git.v4"
@@ -18,7 +18,7 @@ import (
 
 	"github.com/alexflint/go-arg"
 	"github.com/ozgio/strutil"
-	"github.com/supanadit/devops-factory/model"
+	"github.com/supanadit/factory/model"
 )
 
 type args struct {
